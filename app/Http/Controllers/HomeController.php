@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Identicon\Identicon;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {

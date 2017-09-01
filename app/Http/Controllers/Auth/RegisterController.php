@@ -6,6 +6,8 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Identicon\Identicon;
+use Storage;
 
 class RegisterController extends Controller
 {
@@ -48,7 +50,7 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:30',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -66,6 +68,23 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'avatar' => $this->makeAavtar($data['email']),
         ]);
+    }
+
+    /**
+     * 根据用户邮箱生成头像
+     *
+     * @param $email
+     * @return string
+     */
+    private function makeAavtar($email)
+    {
+        $identicon = new Identicon();
+        $imageData = $identicon->getImageData($email);
+        $imageName = md5($email).'.png';
+
+        file_put_contents(Storage::path('avatars'.DIRECTORY_SEPARATOR.$imageName), $imageData);
+        return Storage::url('avatars').DIRECTORY_SEPARATOR.$imageName;
     }
 }
